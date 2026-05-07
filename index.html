@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Quiz App</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:white; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+    .quiz-box { background:#1e293b; padding:20px; border-radius:12px; width:350px; text-align:center; box-shadow:0 0 20px rgba(0,0,0,0.5); }
+    button { margin:6px; padding:10px; border:none; border-radius:8px; cursor:pointer; background:#38bdf8; transition:0.3s; }
+    button:hover { transform:scale(1.1); }
+    select { padding:8px; margin-bottom:10px; border-radius:6px; }
+    #timer { font-weight:bold; margin-bottom:10px; }
+  </style>
+</head>
+<body><div class="quiz-box">
+  <h2>Quiz App 🚀</h2>
+  <select id="category" onchange="startQuiz()">
+    <option value="general">General</option>
+    <option value="tech">Tech</option>
+  </select>
+  <div id="timer">Time: 10</div>
+  <h3 id="question"></h3>
+  <div id="answers"></div>
+  <p id="score"></p>
+  <button onclick="restartQuiz()">Restart</button>
+</div><audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio> <audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+<script>
+const data = {
+  general: [
+    { q:"Capital of India?", a:["Delhi","Mumbai","Chennai"], correct:"Delhi" },
+    { q:"5 x 5?", a:["20","25","30"], correct:"25" },
+    { q:"Sun rises from?", a:["West","East","North"], correct:"East" },
+    { q:"Water formula?", a:["H2O","CO2","O2"], correct:"H2O" },
+    { q:"Largest animal?", a:["Elephant","Blue Whale","Tiger"], correct:"Blue Whale" }
+  ],
+  tech: [
+    { q:"HTML stands for?", a:["Hyper Text Markup Language","High Text Machine","Hyper Tool"], correct:"Hyper Text Markup Language" },
+    { q:"CSS used for?", a:["Structure","Style","Database"], correct:"Style" },
+    { q:"JS runs in?", a:["Browser","Server","Both"], correct:"Browser" },
+    { q:"Which is programming language?", a:["HTML","Python","CSS"], correct:"Python" },
+    { q:"React is?", a:["Library","Language","Database"], correct:"Library" }
+  ]
+};
+
+let quiz, index, score, timer, timeLeft;
+
+function startQuiz(){
+  quiz = data[document.getElementById('category').value];
+  index = 0; score = 0;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  clearInterval(timer);
+  timeLeft = 10;
+  document.getElementById('timer').innerText = 'Time: ' + timeLeft;
+
+  timer = setInterval(()=>{
+    timeLeft--;
+    document.getElementById('timer').innerText = 'Time: ' + timeLeft;
+    if(timeLeft===0){
+      next();
+    }
+  },1000);
+
+  let q = quiz[index];
+  document.getElementById('question').innerText = q.q;
+  let answersDiv = document.getElementById('answers');
+  answersDiv.innerHTML='';
+
+  q.a.forEach(ans=>{
+    let btn = document.createElement('button');
+    btn.innerText = ans;
+    btn.onclick = ()=>checkAnswer(ans);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(ans){
+  clearInterval(timer);
+  if(ans===quiz[index].correct){
+    score++;
+    document.getElementById('correctSound').play();
+  } else {
+    document.getElementById('wrongSound').play();
+  }
+  next();
+}
+
+function next(){
+  index++;
+  if(index<quiz.length){
+    loadQuestion();
+  } else {
+    document.getElementById('question').innerText='Finished!';
+    document.getElementById('answers').innerHTML='';
+    document.getElementById('score').innerText='Score: '+score+'/'+quiz.length;
+  }
+}
+
+function restartQuiz(){ startQuiz(); }
+
+startQuiz();
+</script></body>
+</html>
